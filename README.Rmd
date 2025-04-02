@@ -1,5 +1,7 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -31,7 +33,7 @@ pak::pak("vsritter/MRThreshold")
 
 ## Example
 
-To simulate the trajectory of 100 patients subject to a capacity of 5 (see the example of a model specification for the *4T Sustainnability Microrandomized* Trial in the package website)
+To simulate the trajectory of 100 patients subject to a capacity of 5 (see the example of a model specification for the [*4T Sustainability Microrandomized Trial*](https://vsritter.github.io/MRThreshold/articles/microrandomization_setup.html))
 
 ```{r example}
 library(MRThreshold)
@@ -42,3 +44,28 @@ set.seed(365342)
 sim_list <- sim_microrand(N = 100, capacity = 5)
 sim_list
 ```
+
+Then, users can compute the relevant metrics when designing their study, *e.g.*, bias, empirical standard error, coverage probability, and power.
+
+```{r, include=FALSE}
+library(tidyverse)
+```
+
+
+```{r}
+# compute metrics
+dt_res <- sim_list$lmer_reg %>% 
+  group_by(sample_size, set, up_to_time) %>% 
+  mutate(bias = estimate - b3,
+         mse = bias^2,
+         empirical_stderr = estimate - mean(estimate, na.rm = T),
+         prop_rej = as.numeric(p.value < 0.05),
+         ll = estimate - 1.96*std.error,
+         ul = estimate + 1.96*std.error,
+         cover = as.numeric((ll <= b3)*(b3 <= ul))) %>% 
+  summarise(across(c(n_obs, n_clust, bias, empirical_stderr, mse, cover, prop_rej),
+                   ~ mean(., na.rm = T)), .groups = 'drop')
+
+dt_res
+```
+

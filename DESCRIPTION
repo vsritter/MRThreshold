@@ -1,12 +1,8 @@
 Package: MRThreshold
-Title: What the Package Does (One Line, Title Case)
+Title: Simulate microransomized trials with a capacity threshold
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: The package simulates the trejectory of subjets on a microransomized trial with a capacity constrain threshold.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -21,3 +17,8 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Authors@R: c(
+    person("Victor", "Ritter", , "vritter@stanford.edu", role = c("aut", "cre")),
+    person("Bryan", "Bunning", role = c("aut", "ctb")),
+    person("Manisha", "Desai", role = c("aut", "ctb"))
+  )

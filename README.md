@@ -22,8 +22,9 @@ pak::pak("vsritter/MRThreshold")
 ## Example
 
 To simulate the trajectory of 100 patients subject to a capacity of 5
-(see the example of a model specification for the *4T Sustainnability
-Microrandomized* Trial in the package website)
+(see the example of a model specification for the [*4T Sustainability
+Microrandomized
+Trial*](https://vsritter.github.io/MRThreshold/articles/microrandomization_setup.html))
 
 ``` r
 library(MRThreshold)
@@ -65,4 +66,39 @@ sim_list
 #>  9         100 A1       17     3       2      5
 #> 10         100 A1       18     2       2      4
 #> # ℹ 335 more rows
+```
+
+Then, users can compute the relevant metrics when designing their study,
+*e.g.*, bias, empirical standard error, coverage probability, and power.
+
+``` r
+# compute metrics
+dt_res <- sim_list$lmer_reg %>% 
+  group_by(sample_size, set, up_to_time) %>% 
+  mutate(bias = estimate - b3,
+         mse = bias^2,
+         empirical_stderr = estimate - mean(estimate, na.rm = T),
+         prop_rej = as.numeric(p.value < 0.05),
+         ll = estimate - 1.96*std.error,
+         ul = estimate + 1.96*std.error,
+         cover = as.numeric((ll <= b3)*(b3 <= ul))) %>% 
+  summarise(across(c(n_obs, n_clust, bias, empirical_stderr, mse, cover, prop_rej),
+                   ~ mean(., na.rm = T)), .groups = 'drop')
+
+dt_res
+#> # A tibble: 43 × 10
+#>    sample_size set   up_to_time n_obs n_clust      bias empirical_stderr     mse
+#>          <dbl> <chr>      <dbl> <dbl>   <dbl>     <dbl>            <dbl>   <dbl>
+#>  1         100 A1            16    19      14   3.15e-3                0 9.93e-6
+#>  2         100 A1            24    72      41   9.96e-4                0 9.92e-7
+#>  3         100 A1            32   166      76   3.43e-4                0 1.18e-7
+#>  4         100 A1            40   281      94   1.46e-4                0 2.13e-8
+#>  5         100 A2            16    21      15  -1.83e-3                0 3.34e-6
+#>  6         100 A2            24    80      47   4.84e-4                0 2.34e-7
+#>  7         100 A2            32   195      81  -5.56e-4                0 3.09e-7
+#>  8         100 A2            40   325      93  -1.84e-4                0 3.38e-8
+#>  9         100 A3            16    22      14  -8.77e-4                0 7.70e-7
+#> 10         100 A3            24    85      42  -6.35e-5                0 4.03e-9
+#> # ℹ 33 more rows
+#> # ℹ 2 more variables: cover <dbl>, prop_rej <dbl>
 ```
