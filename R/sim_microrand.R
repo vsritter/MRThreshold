@@ -14,11 +14,6 @@ skip.seed.streams <- function(n) {
   assign('.Random.seed', x, pos=.GlobalEnv)
 }
 
-# start block
-RNGkind("L'Ecuyer-CMRG")
-
-
-
 #' Title
 #'
 #' @param N
@@ -29,7 +24,7 @@ RNGkind("L'Ecuyer-CMRG")
 #' @export
 #'
 #' @examples
-sim_4t_microrand <- function(N, capacity = Inf, return_dt_sim = FALSE) {
+sim_microrand <- function(N, capacity = Inf, return_dt_sim = FALSE) {
   # N: scalar or vector of sample sizes to be simulated
 
   dt_aux0 <- lapply(N, \(x){
